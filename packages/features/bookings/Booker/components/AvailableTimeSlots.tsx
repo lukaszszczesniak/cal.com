@@ -200,7 +200,7 @@ export const AvailableTimeSlots = ({
               }}
               key={slots.date}
               date={dayjs(slots.date)}
-              showTimeFormatToggle={!isColumnView}
+              showTimeFormatToggle={false}
               availableMonth={
                 dayjs(selectedDate).format("MM") !== dayjs(slots.date).format("MM")
                   ? dayjs(slots.date).format("MMM")

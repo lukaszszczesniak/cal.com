@@ -94,7 +94,7 @@ const Day = ({
       type="button"
       style={disabled ? { ...disabledDateButtonEmbedStyles } : { ...enabledDateButtonEmbedStyles }}
       className={classNames(
-        "disabled:text-bookinglighter absolute bottom-0 left-0 right-0 top-0 mx-auto w-full rounded-md border-2 border-transparent text-center text-sm font-medium transition disabled:cursor-default disabled:border-transparent disabled:font-light ",
+        "disabled:text-bookinglighter absolute bottom-0 left-0 right-0 top-0 mx-auto w-full rounded-full border-2 border-transparent text-center text-sm font-medium transition disabled:cursor-default disabled:border-transparent disabled:font-light ",
         active
           ? "bg-brand-default text-brand"
           : !disabled
@@ -197,34 +197,12 @@ const Days = ({
   const getPadding = (day: number) => (browsingDate.set("date", day).day() - weekStart + 7) % 7;
   const totalDays = daysInMonth(browsingDate);
 
-  const showNextMonthDays = isSecondWeekOver && !isCompact;
+  // Traditional calendar grid logic
+  const pad = getPadding(1);
+  days = Array(pad).fill(null);
 
-  // Only apply end-of-month logic for main monthly view (not compact sidebar)
-  if (showNextMonthDays) {
-    const startDay = 8;
-    const pad = getPadding(startDay);
-    days = Array(pad).fill(null);
-
-    for (let day = startDay; day <= totalDays; day++) {
-      days.push(browsingDate.set("date", day));
-    }
-
-    const remainingInRow = days.length % 7;
-    const extraDays = (remainingInRow > 0 ? 7 - remainingInRow : 0) + 7;
-    const nextMonth = browsingDate.add(1, "month");
-
-    // Add days starting from day 1 of next month
-    for (let i = 0; i < extraDays; i++) {
-      days.push(nextMonth.set("date", 1 + i));
-    }
-  } else {
-    // Traditional calendar grid logic for compact sidebar or early in month
-    const pad = getPadding(1);
-    days = Array(pad).fill(null);
-
-    for (let day = 1; day <= totalDays; day++) {
-      days.push(browsingDate.set("date", day));
-    }
+  for (let day = 1; day <= totalDays; day++) {
+    days.push(browsingDate.set("date", day));
   }
 
   const [selectedDatesAndTimes] = useBookerStoreContext((state) => [state.selectedDatesAndTimes], shallow);
@@ -342,7 +320,7 @@ const Days = ({
               active={isActive(day)}
               away={away}
               emoji={emoji}
-              showMonthTooltip={showNextMonthDays && !disabled && day.month() !== browsingDate.month()}
+              showMonthTooltip={false}
               isFirstDayOfNextMonth={isFirstDayOfNextMonth}
             />
           )}
@@ -415,22 +393,7 @@ const DatePicker = ({
 
   return (
     <div className={className}>
-      <div className="mb-1 flex items-center justify-between text-xl">
-        <span className="text-default w-1/2 text-base">
-          {browsingDate ? (
-            <time dateTime={browsingDate.format("YYYY-MM")} data-testid="selected-month-label">
-              <strong
-                className={classNames(`text-emphasis font-semibold`, customClassNames?.datePickerTitle)}>
-                {month}
-              </strong>{" "}
-              <span className={classNames(`text-subtle font-medium`, customClassNames?.datePickerTitle)}>
-                {browsingDate.format("YYYY")}
-              </span>
-            </time>
-          ) : (
-            <SkeletonText className="h-8 w-24" />
-          )}
-        </span>
+      <div className="mb-1 flex items-center justify-center space-x-2.5 text-xl">
         <div className="text-emphasis">
           <div className="flex">
             <Button
@@ -448,6 +411,25 @@ const DatePicker = ({
               StartIcon="chevron-left"
               aria-label={t("view_previous_month")}
             />
+          </div>
+        </div>
+        <span className="text-default text-base">
+          {browsingDate ? (
+            <time dateTime={browsingDate.format("YYYY-MM")} data-testid="selected-month-label">
+              <strong
+                className={classNames(`text-emphasis font-semibold`, customClassNames?.datePickerTitle)}>
+                {month}
+              </strong>{" "}
+              <span className={classNames(`text-subtle font-medium`, customClassNames?.datePickerTitle)}>
+                {browsingDate.format("YYYY")}
+              </span>
+            </time>
+          ) : (
+            <SkeletonText className="h-8 w-24" />
+          )}
+        </span>
+        <div className="text-emphasis">
+          <div className="flex">
             <Button
               className={classNames(
                 `group p-1 opacity-70 transition hover:opacity-100 rtl:rotate-180`,

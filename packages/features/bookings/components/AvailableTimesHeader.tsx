@@ -8,6 +8,7 @@ import { nameOfDay } from "@calcom/lib/weekday";
 import { BookerLayouts } from "@calcom/prisma/zod-utils";
 import classNames from "@calcom/ui/classNames";
 
+import { useBookerTime } from "../Booker/components/hooks/useBookerTime";
 import { TimeFormatToggle } from "./TimeFormatToggle";
 
 type AvailableTimesHeaderProps = {
@@ -28,10 +29,16 @@ export const AvailableTimesHeader = ({
   customClassNames,
 }: AvailableTimesHeaderProps) => {
   const { t, i18n } = useLocale();
+  const { timezone } = useBookerTime();
   const [layout] = useBookerStoreContext((state) => [state.layout], shallow);
   const isColumnView = layout === BookerLayouts.COLUMN_VIEW;
   const isMonthView = layout === BookerLayouts.MONTH_VIEW;
   const isToday = dayjs().isSame(date, "day");
+
+  const formattedDate = new Intl.DateTimeFormat(i18n.language, {
+    timeZone: timezone,
+    dateStyle: "long",
+  }).format(new Date(date.year(), date.month(), date.date()));
 
   return (
     <header
@@ -50,7 +57,17 @@ export const AvailableTimesHeader = ({
             isToday && !customClassNames?.availableTimeSlotsTitle && "!text-default",
             customClassNames?.availableTimeSlotsTitle
           )}>
-          {nameOfDay(i18n.language, Number(date.format("d")), "short")}
+          {nameOfDay(i18n.language, Number(date.format("d")), "long")}
+        </span>
+        <span
+          className={classNames(
+            isColumnView && isToday && "bg-brand-default text-brand ml-2",
+            "inline-flex items-center justify-center pt-0.5 font-medium",
+            isMonthView
+              ? `text-default text-sm ${customClassNames?.availableTimeSlotsTitle}`
+              : `text-xs ${customClassNames?.availableTimeSlotsTitle}`
+          )}>
+          ,
         </span>
         <span
           className={classNames(
@@ -60,7 +77,7 @@ export const AvailableTimesHeader = ({
               ? `text-default text-sm ${customClassNames?.availableTimeSlotsTitle}`
               : `text-xs ${customClassNames?.availableTimeSlotsTitle}`
           )}>
-          {date.format("DD")}
+          {formattedDate}
           {availableMonth && `, ${availableMonth}`}
         </span>
       </span>
