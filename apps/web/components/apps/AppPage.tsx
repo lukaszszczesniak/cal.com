@@ -70,7 +70,6 @@ export const AppPage = ({
   docs,
   website,
   email,
-  tos,
   privacy,
   teamsPlanRequired,
   descriptionItems,
@@ -418,18 +417,6 @@ export const AppPage = ({
                 <Icon name="mail" className="text-subtle -mt-px mr-1 inline h-4 w-4" />
 
                 {email}
-              </a>
-            </li>
-          )}
-          {tos && (
-            <li>
-              <a
-                target="_blank"
-                rel="noreferrer"
-                className="text-emphasis font-normal no-underline hover:underline"
-                href={tos}>
-                <Icon name="file" className="text-subtle -mt-px mr-1 inline h-4 w-4" />
-                {t("terms_of_service")}
               </a>
             </li>
           )}

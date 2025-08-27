@@ -1,13 +1,12 @@
 import type { TFunction } from "i18next";
-import Link from "next/link";
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import type { FieldError } from "react-hook-form";
 
 import { useIsPlatformBookerEmbed } from "@calcom/atoms/hooks/useIsPlatformBookerEmbed";
 import { useBookerStoreContext } from "@calcom/features/bookings/Booker/BookerStoreProvider";
 import type { BookerEvent } from "@calcom/features/bookings/types";
 import ServerTrans from "@calcom/lib/components/ServerTrans";
-import { WEBSITE_PRIVACY_POLICY_URL, WEBSITE_TERMS_URL } from "@calcom/lib/constants";
+import { WEBSITE_PRIVACY_POLICY_URL } from "@calcom/lib/constants";
 import { ErrorCode } from "@calcom/lib/errorCodes";
 import { getPaymentAppData } from "@calcom/lib/getPaymentAppData";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
@@ -82,6 +81,17 @@ export const BookEventForm = ({
 
   const [responseVercelIdHeader] = useState<string | null>(null);
   const { t, i18n } = useLocale();
+
+  React.useEffect(() => {
+    const s = document.createElement("script");
+    s.src = "https://cdn.iubenda.com/iubenda.js";
+    s.async = true;
+    document.body.appendChild(s);
+
+    return () => {
+      document.body.removeChild(s);
+    };
+  });
 
   const isPaidEvent = useMemo(() => {
     if (!eventType?.price) return false;
@@ -178,43 +188,27 @@ export const BookEventForm = ({
               t={t}
               i18nKey="signing_up_terms"
               components={[
-                <Link
-                  className="text-emphasis hover:underline"
-                  key="terms"
-                  href={`${WEBSITE_TERMS_URL}`}
-                  target="_blank">
-                  Terms
-                </Link>,
-                <Link
-                  className="text-emphasis hover:underline"
+                <a
+                  className="iubenda-white iubenda-noiframe iubenda-embed"
                   key="privacy"
-                  href={`${WEBSITE_PRIVACY_POLICY_URL}`}
-                  target="_blank">
+                  href={`${WEBSITE_PRIVACY_POLICY_URL}`}>
                   Privacy Policy.
-                </Link>,
+                </a>,
               ]}
             />
+            .
           </div>
         )}
 
         {isPlatformBookerEmbed && (
           <div className="text-subtle my-3 w-full text-xs">
             {t("proceeding_agreement")}{" "}
-            <Link
-              className="text-emphasis hover:underline"
-              key="terms"
-              href={`${WEBSITE_TERMS_URL}`}
-              target="_blank">
-              {t("terms")}
-            </Link>{" "}
-            {t("and")}{" "}
-            <Link
-              className="text-emphasis hover:underline"
+            <a
+              className="iubenda-white iubenda-noiframe iubenda-embed"
               key="privacy"
-              href={`${WEBSITE_PRIVACY_POLICY_URL}`}
-              target="_blank">
+              href={`${WEBSITE_PRIVACY_POLICY_URL}`}>
               {t("privacy_policy")}
-            </Link>
+            </a>
             .
           </div>
         )}

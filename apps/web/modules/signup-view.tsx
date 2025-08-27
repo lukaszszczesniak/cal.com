@@ -25,7 +25,6 @@ import {
   WEBAPP_URL,
   CLOUDFLARE_SITE_ID,
   WEBSITE_PRIVACY_POLICY_URL,
-  WEBSITE_TERMS_URL,
   WEBSITE_URL,
 } from "@calcom/lib/constants";
 import { isENVDev } from "@calcom/lib/env";
@@ -501,6 +500,7 @@ export default function Signup({
                         !formMethods.getValues("email") ||
                         !formMethods.getValues("password") ||
                         (CLOUDFLARE_SITE_ID &&
+                          // eslint-disable-next-line turbo/no-undeclared-env-vars
                           !process.env.NEXT_PUBLIC_IS_E2E &&
                           !formMethods.getValues("cfToken")) ||
                         isSubmitting ||
@@ -613,13 +613,6 @@ export default function Signup({
                     t={t}
                     i18nKey="signing_up_terms"
                     components={[
-                      <Link
-                        className="text-emphasis hover:underline"
-                        key="terms"
-                        href={`${WEBSITE_TERMS_URL}`}
-                        target="_blank">
-                        Terms
-                      </Link>,
                       <Link
                         className="text-emphasis hover:underline"
                         key="privacy"
